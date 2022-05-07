@@ -1,0 +1,54 @@
+enum Status {
+	APPLY
+	REJECT
+	OA
+	PHONE
+	FINAL
+	OFFER
+}
+
+type User {
+	id: ID!
+	email: String!
+}
+
+type Application {
+	id: ID!
+	company: String!
+	role: String!
+	status: Status!
+	location: String
+	dateApplied: String
+	dateUpdated: String
+	notes: String
+}
+
+type Query {
+	applications(userId: ID!): [Application]
+	users: [User]
+	getUserById(id: ID!): User!
+	getUserByEmail(email: String!): User!
+}
+
+input ApplicationInput {
+	company: String
+	role: String
+	status: Status
+	location: String
+	dateApplied: String
+	notes: String
+}
+
+input UserInput {
+	email: String!
+}
+
+type Mutation {
+	createApplication(input: ApplicationInput!, userId: String!): Application!
+	updateApplication(
+		userId: String!
+		appId: String!
+		status: Status!
+	): Application!
+	createUser(input: UserInput!): User!
+}
