@@ -20,7 +20,7 @@ func main() {
 		port = defaultPort
 	}
 
-	firestoreClient, err := datastore.NewFirestoreClient("application-tracker-5027c")
+	firestoreClient, err := datastore.NewFirestoreClient(os.Getenv("APP_TRACK_FIREBASE"))
 
 	if err != nil {
 		log.Fatalln("Failed to connect to Firebase/Firestore!" + err.Error())

@@ -14,8 +14,7 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
-func (r *mutationResolver) CreateApplic
- ation(ctx context.Context, input model.ApplicationInput, userID string) (*model.Application, error) {
+func (r *mutationResolver) CreateApplication(ctx context.Context, input model.ApplicationInput, userID string) (*model.Application, error) {
 	if input.Company == nil || input.Role == nil || input.Status == nil { // Necessities to create a new application.
 		return nil, errors.New("Company, Role, and Status must be provided")
 	}
