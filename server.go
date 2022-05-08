@@ -10,6 +10,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/rs/cors"
 )
 
 const defaultPort = "8080"
@@ -29,9 +30,15 @@ func main() {
 	resv := graph.NewResolver(firestoreClient)
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resv}))
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost", "http://localhost:3000"},
+		AllowedHeaders:   []string{"*"},
+		AllowedMethods:   []string{"GET", "PUT", "POST", "OPTIONS"},
+		AllowCredentials: true,
+	})
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/query", cors.Handler(srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
