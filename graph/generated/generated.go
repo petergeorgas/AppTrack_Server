@@ -57,7 +57,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateApplication func(childComplexity int, input model.ApplicationInput, userID string) int
-		CreateUser        func(childComplexity int, input model.UserInput) int
+		CreateUser        func(childComplexity int, userID string, input model.UserInput) int
 		UpdateApplication func(childComplexity int, userID string, appID string, status model.Status) int
 	}
 
@@ -77,7 +77,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateApplication(ctx context.Context, input model.ApplicationInput, userID string) (*model.Application, error)
 	UpdateApplication(ctx context.Context, userID string, appID string, status model.Status) (*model.Application, error)
-	CreateUser(ctx context.Context, input model.UserInput) (*model.User, error)
+	CreateUser(ctx context.Context, userID string, input model.UserInput) (*model.User, error)
 }
 type QueryResolver interface {
 	Applications(ctx context.Context, userID string) ([]*model.Application, error)
@@ -179,7 +179,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(model.UserInput)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["userId"].(string), args["input"].(model.UserInput)), true
 
 	case "Mutation.updateApplication":
 		if e.complexity.Mutation.UpdateApplication == nil {
@@ -372,7 +372,7 @@ type Mutation {
 		appId: String!
 		status: Status!
 	): Application!
-	createUser(input: UserInput!): User!
+	createUser(userId: String!, input: UserInput!): User!
 }
 `, BuiltIn: false},
 }
@@ -409,15 +409,24 @@ func (ec *executionContext) field_Mutation_createApplication_args(ctx context.Co
 func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.UserInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUserInput2apptrackᚋgraphᚋmodelᚐUserInput(ctx, tmp)
+	var arg0 string
+	if tmp, ok := rawArgs["userId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["userId"] = arg0
+	var arg1 model.UserInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUserInput2apptrackᚋgraphᚋmodelᚐUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -1052,7 +1061,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["input"].(model.UserInput))
+		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["userId"].(string), fc.Args["input"].(model.UserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

@@ -91,21 +91,23 @@ func (r *mutationResolver) UpdateApplication(ctx context.Context, userID string,
 	return &m, nil
 }
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput) (*model.User, error) {
-	// TODO: Check if account already exists for email
+func (r *mutationResolver) CreateUser(ctx context.Context, userID string, input model.UserInput) (*model.User, error) {
 	users := r.FirestoreClient.Collection("users")
+	usrDoc := users.Doc(userID)
+	_, err := usrDoc.Get(ctx) // Check if user already exists in DB...
+	if err == nil {           // If err is not set, that means the document already exists.
+		return nil, errors.New("User already exists in database.")
+	}
 
 	u := model.User{
+		ID:    userID,
 		Email: input.Email,
 	}
-	newDoc := users.NewDoc()
+	_, err = usrDoc.Set(ctx, &u)
 
-	_, err := newDoc.Create(ctx, u)
 	if err != nil {
 		return nil, err
 	}
-
-	u.ID = newDoc.ID
 
 	return &u, nil
 }
@@ -160,13 +162,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *queryResolver) GetApplications(ctx context.Context, id string) ([]*model.Application, error) {
-	panic(fmt.Errorf("not implemented"))
-}

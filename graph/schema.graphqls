@@ -50,5 +50,5 @@ type Mutation {
 		appId: String!
 		status: Status!
 	): Application!
-	createUser(input: UserInput!): User!
+	createUser(userId: String!, input: UserInput!): User!
 }
