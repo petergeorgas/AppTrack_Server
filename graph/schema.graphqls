@@ -50,5 +50,6 @@ type Mutation {
 		appId: String!
 		status: Status!
 	): Application!
+	deleteApplication(userId: String!, appId: String!): Application!
 	createUser(userId: String!, input: UserInput!): User!
 }

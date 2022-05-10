@@ -58,6 +58,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateApplication func(childComplexity int, input model.ApplicationInput, userID string) int
 		CreateUser        func(childComplexity int, userID string, input model.UserInput) int
+		DeleteApplication func(childComplexity int, userID string, appID string) int
 		UpdateApplication func(childComplexity int, userID string, appID string, status model.Status) int
 	}
 
@@ -77,6 +78,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateApplication(ctx context.Context, input model.ApplicationInput, userID string) (*model.Application, error)
 	UpdateApplication(ctx context.Context, userID string, appID string, status model.Status) (*model.Application, error)
+	DeleteApplication(ctx context.Context, userID string, appID string) (*model.Application, error)
 	CreateUser(ctx context.Context, userID string, input model.UserInput) (*model.User, error)
 }
 type QueryResolver interface {
@@ -180,6 +182,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["userId"].(string), args["input"].(model.UserInput)), true
+
+	case "Mutation.deleteApplication":
+		if e.complexity.Mutation.DeleteApplication == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteApplication_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteApplication(childComplexity, args["userId"].(string), args["appId"].(string)), true
 
 	case "Mutation.updateApplication":
 		if e.complexity.Mutation.UpdateApplication == nil {
@@ -372,6 +386,7 @@ type Mutation {
 		appId: String!
 		status: Status!
 	): Application!
+	deleteApplication(userId: String!, appId: String!): Application!
 	createUser(userId: String!, input: UserInput!): User!
 }
 `, BuiltIn: false},
@@ -427,6 +442,30 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 		}
 	}
 	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteApplication_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["userId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["appId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("appId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["appId"] = arg1
 	return args, nil
 }
 
@@ -1041,6 +1080,79 @@ func (ec *executionContext) fieldContext_Mutation_updateApplication(ctx context.
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateApplication_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteApplication(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteApplication(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteApplication(rctx, fc.Args["userId"].(string), fc.Args["appId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Application)
+	fc.Result = res
+	return ec.marshalNApplication2ᚖapptrackᚋgraphᚋmodelᚐApplication(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteApplication(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Application_id(ctx, field)
+			case "company":
+				return ec.fieldContext_Application_company(ctx, field)
+			case "role":
+				return ec.fieldContext_Application_role(ctx, field)
+			case "status":
+				return ec.fieldContext_Application_status(ctx, field)
+			case "location":
+				return ec.fieldContext_Application_location(ctx, field)
+			case "dateApplied":
+				return ec.fieldContext_Application_dateApplied(ctx, field)
+			case "dateUpdated":
+				return ec.fieldContext_Application_dateUpdated(ctx, field)
+			case "notes":
+				return ec.fieldContext_Application_notes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Application", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteApplication_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -3528,6 +3640,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateApplication(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteApplication":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteApplication(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {

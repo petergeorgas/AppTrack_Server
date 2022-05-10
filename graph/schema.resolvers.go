@@ -91,6 +91,35 @@ func (r *mutationResolver) UpdateApplication(ctx context.Context, userID string,
 	return &m, nil
 }
 
+func (r *mutationResolver) DeleteApplication(ctx context.Context, userID string, appID string) (*model.Application, error) {
+	users := r.FirestoreClient.Collection("users")
+	_, err := users.Doc(userID).Get(ctx) // Check to make sure user exists
+
+	if err != nil {
+		return nil, err
+	}
+
+	apps := users.Doc(userID).Collection("applications")
+	appDocRef := apps.Doc(appID)
+	doc, err := appDocRef.Get(ctx) // Check to make sure application exists
+
+	if err != nil {
+		return nil, err
+	}
+
+	var m model.Application
+	err = doc.DataTo(&m)
+	m.ID = appID
+
+	_, err = appDocRef.Delete(ctx) // Delete the document
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &m, nil
+}
+
 func (r *mutationResolver) CreateUser(ctx context.Context, userID string, input model.UserInput) (*model.User, error) {
 	users := r.FirestoreClient.Collection("users")
 	usrDoc := users.Doc(userID)
