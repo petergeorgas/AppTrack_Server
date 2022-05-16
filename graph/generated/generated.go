@@ -59,7 +59,7 @@ type ComplexityRoot struct {
 		CreateApplication func(childComplexity int, input model.ApplicationInput, userID string) int
 		CreateUser        func(childComplexity int, userID string, input model.UserInput) int
 		DeleteApplication func(childComplexity int, userID string, appID string) int
-		UpdateApplication func(childComplexity int, userID string, appID string, status model.Status) int
+		UpdateApplication func(childComplexity int, userID string, appID string, input model.ApplicationInput) int
 	}
 
 	Query struct {
@@ -77,7 +77,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateApplication(ctx context.Context, input model.ApplicationInput, userID string) (*model.Application, error)
-	UpdateApplication(ctx context.Context, userID string, appID string, status model.Status) (*model.Application, error)
+	UpdateApplication(ctx context.Context, userID string, appID string, input model.ApplicationInput) (*model.Application, error)
 	DeleteApplication(ctx context.Context, userID string, appID string) (*model.Application, error)
 	CreateUser(ctx context.Context, userID string, input model.UserInput) (*model.User, error)
 }
@@ -205,7 +205,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateApplication(childComplexity, args["userId"].(string), args["appId"].(string), args["status"].(model.Status)), true
+		return e.complexity.Mutation.UpdateApplication(childComplexity, args["userId"].(string), args["appId"].(string), args["input"].(model.ApplicationInput)), true
 
 	case "Query.applications":
 		if e.complexity.Query.Applications == nil {
@@ -384,7 +384,7 @@ type Mutation {
 	updateApplication(
 		userId: String!
 		appId: String!
-		status: Status!
+		input: ApplicationInput!
 	): Application!
 	deleteApplication(userId: String!, appId: String!): Application!
 	createUser(userId: String!, input: UserInput!): User!
@@ -490,15 +490,15 @@ func (ec *executionContext) field_Mutation_updateApplication_args(ctx context.Co
 		}
 	}
 	args["appId"] = arg1
-	var arg2 model.Status
-	if tmp, ok := rawArgs["status"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-		arg2, err = ec.unmarshalNStatus2apptrackᚋgraphᚋmodelᚐStatus(ctx, tmp)
+	var arg2 model.ApplicationInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg2, err = ec.unmarshalNApplicationInput2apptrackᚋgraphᚋmodelᚐApplicationInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["status"] = arg2
+	args["input"] = arg2
 	return args, nil
 }
 
@@ -1027,7 +1027,7 @@ func (ec *executionContext) _Mutation_updateApplication(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateApplication(rctx, fc.Args["userId"].(string), fc.Args["appId"].(string), fc.Args["status"].(model.Status))
+		return ec.resolvers.Mutation().UpdateApplication(rctx, fc.Args["userId"].(string), fc.Args["appId"].(string), fc.Args["input"].(model.ApplicationInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
