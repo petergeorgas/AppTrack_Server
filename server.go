@@ -31,7 +31,7 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resv}))
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost", "http://localhost:3000"},
+		AllowedOrigins:   []string{"*"},
 		AllowedHeaders:   []string{"*"},
 		AllowedMethods:   []string{"GET", "PUT", "POST", "OPTIONS"},
 		AllowCredentials: true,
