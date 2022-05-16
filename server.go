@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to connect to Firebase/Firestore!" + err.Error())
 	}
-	defer firestoreClient.Close() //
+	defer firestoreClient.Close()
 	resv := graph.NewResolver(firestoreClient)
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resv}))
