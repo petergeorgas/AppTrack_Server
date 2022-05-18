@@ -9,9 +9,9 @@ import (
 
 func NewFirestoreClient(projId string) (*firestore.Client, error) {
 	ctx := context.Background()
-	config := &firebase.Config{ProjectID: projId}
+	//config := &firebase.Config{ProjectID: projId}
 
-	app, err := firebase.NewApp(ctx, config)
+	app, err := firebase.NewApp(ctx, nil)
 	if err != nil {
 		return nil, err
 	}

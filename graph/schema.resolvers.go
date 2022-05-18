@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -52,7 +53,7 @@ func (r *mutationResolver) CreateApplication(ctx context.Context, input model.Ap
 	return &m, nil
 }
 
-func (r *mutationResolver) UpdateApplication(ctx context.Context, userID string, appID string, status model.Status) (*model.Application, error) {
+func (r *mutationResolver) UpdateApplication(ctx context.Context, userID string, appID string, input model.ApplicationInput) (*model.Application, error) {
 	users := r.FirestoreClient.Collection("users")
 	_, err := users.Doc(userID).Get(ctx) // Check to make sure user exists
 
@@ -67,11 +68,31 @@ func (r *mutationResolver) UpdateApplication(ctx context.Context, userID string,
 		return nil, err
 	}
 
-	appDoc := apps.Doc(appID)
-	_, err = appDoc.Update(ctx, []firestore.Update{
-		{Path: "Status", Value: status},
+	appDoc := apps.Doc(appID) // Get document reference
+
+	batch := r.FirestoreClient.Batch() // Get a new write batch
+
+	// Iterate over each value we have in the given struct
+	v := reflect.ValueOf(input)
+
+	// For each field in the struct, batch a update on the doc for that corresponding field if the field is populated.
+	for i := 0; i < v.NumField(); i++ {
+		fieldName := v.Type().Field(i).Name
+		fieldVal := v.Field(i).Interface()
+
+		if fieldVal != nil {
+			batch.Update(appDoc, []firestore.Update{
+				{Path: fieldName, Value: fieldVal},
+			})
+		}
+	}
+
+	// Update time updated...
+	batch.Update(appDoc, []firestore.Update{
 		{Path: "DateUpdated", Value: fmt.Sprintf("%v", time.Now().UnixMilli())},
 	})
+
+	_, err = batch.Commit(ctx)
 
 	if err != nil {
 		return nil, err
@@ -79,7 +100,7 @@ func (r *mutationResolver) UpdateApplication(ctx context.Context, userID string,
 
 	var m model.Application
 
-	doc, err := apps.Doc(appID).Get(ctx)
+	doc, err := apps.Doc(appID).Get(ctx) // Get the updated document TODO: Do we really need to do it like this??
 	err = doc.DataTo(&m)
 
 	m.ID = appID

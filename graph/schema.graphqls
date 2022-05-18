@@ -48,7 +48,7 @@ type Mutation {
 	updateApplication(
 		userId: String!
 		appId: String!
-		status: Status!
+		input: ApplicationInput!
 	): Application!
 	deleteApplication(userId: String!, appId: String!): Application!
 	createUser(userId: String!, input: UserInput!): User!
