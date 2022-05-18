@@ -25,9 +25,6 @@ type Application {
 
 type Query {
 	applications(userId: ID!): [Application]
-	users: [User]
-	getUserById(id: ID!): User!
-	getUserByEmail(email: String!): User!
 }
 
 input ApplicationInput {

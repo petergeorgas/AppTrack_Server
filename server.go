@@ -31,7 +31,7 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resv}))
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://192.168.1.239", "http://192.168.1.239:3000", "http://localhost", "http://localhost:3000", "https://apptrack-178utrkn2-petergeorgas.vercel.app"},
+		AllowedOrigins:   []string{"http://192.168.1.239", "http://192.168.1.239:3000", "http://localhost", "http://localhost:3000", "https://apptrack-phi.vercel.app", "https://apptrack-178utrkn2-petergeorgas.vercel.app"},
 		AllowedHeaders:   []string{"*"},
 		AllowedMethods:   []string{"GET", "PUT", "POST", "OPTIONS"},
 		AllowCredentials: true,

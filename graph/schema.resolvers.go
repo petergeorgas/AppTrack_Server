@@ -192,18 +192,6 @@ func (r *queryResolver) Applications(ctx context.Context, userID string) ([]*mod
 	return appList, nil
 }
 
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *queryResolver) GetUserByID(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *queryResolver) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
