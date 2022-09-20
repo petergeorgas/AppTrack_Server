@@ -39,7 +39,7 @@ func main() {
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", cors.Handler(srv))
-	// Test
+
 	log.Printf("SERVER STARTED ON PORT: %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
