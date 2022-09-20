@@ -7,9 +7,9 @@ import (
 	firebase "firebase.google.com/go"
 )
 
-func NewFirestoreClient(projId string) (*firestore.Client, error) {
+func NewFirestoreClient() (*firestore.Client, error) {
 	ctx := context.Background()
-	//config := &firebase.Config{ProjectID: projId}
+
 
 	app, err := firebase.NewApp(ctx, nil)
 	if err != nil {

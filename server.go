@@ -21,10 +21,10 @@ func main() {
 		port = defaultPort
 	}
 
-	firestoreClient, err := datastore.NewFirestoreClient(os.Getenv("APP_TRACK_FIREBASE"))
+	firestoreClient, err := datastore.NewFirestoreClient()
 
 	if err != nil {
-		log.Fatalln("Failed to connect to Firebase/Firestore!" + err.Error())
+		log.Fatalln("Failed to connect to Firebase/Firestore!\n" + err.Error())
 	}
 	defer firestoreClient.Close()
 	resv := graph.NewResolver(firestoreClient)
@@ -40,6 +40,6 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", cors.Handler(srv))
 
-	log.Printf("SERVER STARTED ON PORT: %s" + port)
+	log.Printf("SERVER STARTED ON PORT: %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

@@ -4,6 +4,7 @@ enum Status {
 	OA
 	PHONE
 	FINAL
+	ONSITE
 	OFFER
 }
 

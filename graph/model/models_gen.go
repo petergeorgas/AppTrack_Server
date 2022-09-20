@@ -45,6 +45,7 @@ const (
 	StatusOa     Status = "OA"
 	StatusPhone  Status = "PHONE"
 	StatusFinal  Status = "FINAL"
+	StatusOnsite Status = "ONSITE"
 	StatusOffer  Status = "OFFER"
 )
 
@@ -54,12 +55,13 @@ var AllStatus = []Status{
 	StatusOa,
 	StatusPhone,
 	StatusFinal,
+	StatusOnsite,
 	StatusOffer,
 }
 
 func (e Status) IsValid() bool {
 	switch e {
-	case StatusApply, StatusReject, StatusOa, StatusPhone, StatusFinal, StatusOffer:
+	case StatusApply, StatusReject, StatusOa, StatusPhone, StatusFinal, StatusOnsite, StatusOffer:
 		return true
 	}
 	return false

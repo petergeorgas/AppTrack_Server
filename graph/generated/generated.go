@@ -302,6 +302,7 @@ var sources = []*ast.Source{
 	OA
 	PHONE
 	FINAL
+	ONSITE
 	OFFER
 }
 
