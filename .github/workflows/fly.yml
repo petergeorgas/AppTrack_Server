@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       deployments: write
+    environment: Production
     concurrency: deploy-group # optional: ensure only one action runs at a time
     if: ${{ github.event.push }}
     steps:
