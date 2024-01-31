@@ -19,8 +19,8 @@ jobs:
       - run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-  deploy:
-    name: Dry Run Deploy 
+  deploy-dry:
+    name: Dry Run Deploy
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request }}
     steps:
