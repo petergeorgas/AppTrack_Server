@@ -7,11 +7,14 @@ jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
+    permissions:
+      deployments: write
     concurrency: deploy-group # optional: ensure only one action runs at a time
     if: ${{ github.event.push }}
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
+      - id: deployment
       - run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
