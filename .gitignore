@@ -1,3 +1,5 @@
 Makefile
 
 go.sum
+
+admin_secrets.json
