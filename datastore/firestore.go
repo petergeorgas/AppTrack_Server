@@ -4,12 +4,11 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
-	firebase "firebase.google.com/go"
+	firebase "firebase.google.com/go/v4"
 )
 
 func NewFirestoreClient() (*firestore.Client, error) {
 	ctx := context.Background()
-
 
 	app, err := firebase.NewApp(ctx, nil)
 	if err != nil {
