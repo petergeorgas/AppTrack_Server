@@ -1,17 +1,17 @@
-name: Fly Deploy
+name: Fly Dry Run Deploy
 on:
-  push:
+  pull_request:
     branches:
       - master
+    types: [opened, synchronize, enqueued, edited]
 jobs:
-  deploy:
-    name: Deploy app
+  deploy-dry:
+    name: Dry Run Deploy
     runs-on: ubuntu-latest
-    concurrency: deploy-group # optional: ensure only one action runs at a time
-    if: ${{ github.event.push }}
+    if: ${{ github.event.pull_request }}
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: flyctl deploy --remote-only --build-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
