@@ -11,7 +11,7 @@ func WriteApplicationCredentialsToFile() error {
 		return errors.New("APP_CREDENTIALS_CONTENTS not set")
 	}
 
-	secretsFile, err := os.Create("admin_secrets.json")
+	secretsFile, err := os.Create("/data/admin_secrets.json")
 	if err != nil {
 		return errors.New("failed to create secrets file")
 	}
