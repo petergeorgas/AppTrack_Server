@@ -4,7 +4,6 @@ import (
 	"apptrack/datastore"
 	"apptrack/graph"
 	"apptrack/graph/generated"
-	"apptrack/secrets"
 	"log"
 	"net/http"
 	"os"
@@ -20,11 +19,6 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
-	}
-
-	err := secrets.WriteApplicationCredentialsToFile()
-	if err != nil {
-		log.Fatalln("Failed to write Google App Credentials to file: " + err.Error())
 	}
 
 	firestoreClient, err := datastore.NewFirestoreClient()
